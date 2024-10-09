@@ -1,9 +1,7 @@
-/* App.css */
-
 body {
   margin: 0;
   font-family: 'Montserrat', sans-serif;
-  background-color: #e9ecef; /* Light background color */
+  background-color: #e9ecef;
 }
 
 .App {
@@ -14,14 +12,46 @@ body {
 
 h1 {
   text-align: center;
-  color: #343a40; /* Dark color for the heading */
+  color: #343a40;
   margin-bottom: 30px;
+}
+
+.centered-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; /* Ensure the button is centered vertically */
+  flex-direction: column;
+}
+
+.connect-button {
+  background-color: #f6851b; /* MetaMask orange */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 50px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-bottom: 50px;
+  transition: background-color 0.3s ease;
+  display: flex;
+  align-items: middle;
+}
+
+.connect-button:hover {
+  background-color: #f2af75; /* Darker orange on hover */
+}
+
+.metamask-icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 10px;
 }
 
 .picture-gallery {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 20px; /* Space between images */
+  gap: 20px;
 }
 
 .picture-item {
@@ -30,18 +60,18 @@ h1 {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   text-align: center;
   overflow: hidden;
-  transition: transform 0.3s, box-shadow 0.3s; /* Animation on hover */
+  transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .picture-item:hover {
-  transform: translateY(-5px); /* Elevate effect on hover */
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2); /* Enhanced shadow */
+  transform: translateY(-5px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
 }
 
 .picture-item img {
   width: 100%;
-  height: 200px; /* Fixed height for uniformity */
-  object-fit: cover; /* Cover to maintain aspect ratio */
+  height: 200px;
+  object-fit: cover;
 }
 
 .buy-button {
@@ -55,8 +85,8 @@ h1 {
 }
 
 .buy-button:hover {
-  background-color: #0056b3; /* Darker blue on hover */
-  transform: scale(1.05); /* Scale effect on hover */
+  background-color: #0056b3;
+  transform: scale(1.05);
 }
 
 .cart {
@@ -71,11 +101,11 @@ h1 {
   display: flex;
   justify-content: space-between;
   padding: 10px 0;
-  border-bottom: 1px solid #dee2e6; /* Separator between items */
+  border-bottom: 1px solid #dee2e6; 
 }
 
 .cart-item:last-child {
-  border-bottom: none; /* No border for the last item */
+  border-bottom: none; 
 }
 
 .total {
@@ -85,6 +115,6 @@ h1 {
 
 @media (max-width: 600px) {
   .picture-gallery {
-    grid-template-columns: 1fr; /* Stack pictures vertically on small screens */
+    grid-template-columns: 1fr;
   }
 }
