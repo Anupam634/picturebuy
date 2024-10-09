@@ -4,15 +4,22 @@ import Cart from './components/Cart';               // Correct path to Cart
 
 function App() {
   const [pictures, setPictures] = useState([
-    { id: 1, name: 'Sunset', price: 10, url: '/images/sunset.jpg' },
-    { id: 2, name: 'Mountain', price: 15, url: '/images/mountain.jpg' },
-    { id: 3, name: 'Forest', price: 12, url: '/images/forest.jpg' },
+    { id: 1, name: 'Bitcoin', price: 10, url: '/images/bitcoin.jpg' },
+    { id: 2, name: 'Ethereum', price: 15, url: '/images/ethereum.jpg' },
+    { id: 3, name: 'Solana', price: 12, url: '/images/solana.jpeg' },
+    { id: 4, name: 'Bnb', price: 12, url: '/images/bnb.png' },
   ]);
 
   const [cart, setCart] = useState([]);
 
   const handleBuy = (picture) => {
-    setCart([...cart, picture]);
+    // Check if the picture is already in the cart
+    const isInCart = cart.some(item => item.id === picture.id);
+    if (!isInCart) {
+      setCart([...cart, picture]);
+    } else {
+      alert("This picture is already in your cart!"); // Optional: Notify user
+    }
   };
 
   const handlePay = () => {
