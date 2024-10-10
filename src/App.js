@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PictureItem from './components/PictureItem';
 import Cart from './components/Cart';
 import { BrowserProvider, parseEther } from 'ethers';
@@ -6,14 +6,30 @@ import './App.css';
 
 function App() {
   const [pictures, setPictures] = useState([
-    { id: 1, name: 'Bitcoin', price: 0.01, url: '/images/bitcoin.jpg' },
-    { id: 2, name: 'Ethereum', price: 0.02, url: '/images/ethereum.jpg' },
-    { id: 3, name: 'Solana', price: 0.03, url: '/images/solana.jpeg' },
-    { id: 4, name: 'Bnb', price: 0.035, url: '/images/bnb.png' },
+    { id: 1, name: 'Bitcoin', price: 10, url: '/images/bitcoin.jpg' },  // Price in USD
+    { id: 2, name: 'Ethereum', price: 20, url: '/images/ethereum.jpg' }, // Price in USD
+    { id: 3, name: 'Solana', price: 30, url: '/images/solana.jpeg' },    // Price in USD
+    { id: 4, name: 'Bnb', price: 35, url: '/images/bnb.png' },           // Price in USD
   ]);
 
   const [cart, setCart] = useState([]);
   const [account, setAccount] = useState(null);
+  const [ethToUsdRate, setEthToUsdRate] = useState(null);
+
+  // Fetch the ETH to USD rate from CoinGecko
+  const fetchEthToUsdRate = async () => {
+    try {
+      const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
+      const data = await response.json();
+      setEthToUsdRate(data.ethereum.usd);
+    } catch (error) {
+      console.error('Error fetching ETH to USD rate:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchEthToUsdRate();
+  }, []);
 
   const connectWallet = async () => {
     if (window.ethereum) {
@@ -44,22 +60,29 @@ function App() {
       return;
     }
 
-    const totalAmount = cart.reduce((total, item) => total + item.price, 0);
+    const totalAmountUSD = cart.reduce((total, item) => total + item.price, 0);
 
-    if (totalAmount === 0) {
+    if (totalAmountUSD === 0) {
       alert('Your cart is empty.');
       return;
     }
 
-    console.log(`Total amount to pay: ${totalAmount} ETH`);
+    if (!ethToUsdRate) {
+      alert('ETH to USD rate is unavailable. Please try again later.');
+      return;
+    }
+
+    // Convert the total amount in USD to ETH
+    const totalAmountETH = totalAmountUSD / ethToUsdRate;
+    console.log(`Total amount to pay: ${totalAmountETH} ETH`);
 
     try {
       const provider = new BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
 
       const transaction = await signer.sendTransaction({
-        to: '0x5cc5132c3d3EFC4327617743D9E537e2C8F4a9D4',
-        value: parseEther(totalAmount.toString()),
+        to: '0x5cc5132c3d3EFC4327617743D9E537e2C8F4a9D4', // Replace with the real address
+        value: parseEther(totalAmountETH.toString()),
       });
 
       console.log('Transaction Hash:', transaction.hash);
