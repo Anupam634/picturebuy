@@ -14,25 +14,9 @@ function App() {
 
   const [cart, setCart] = useState([]);
   const [account, setAccount] = useState(null);
-  const [ethToUsdRate, setEthToUsdRate] = useState(null);
 
-  // Fetch the current ETH to USD rate from the CoinGecko API
-  const fetchEthToUsdRate = async () => {
-    try {
-      const response = await fetch(
-        'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd'
-      );
-      const data = await response.json();
-      setEthToUsdRate(data.ethereum.usd);
-    } catch (error) {
-      console.error('Error fetching ETH to USD rate:', error);
-    }
-  };
-
-  // Run the fetchEthToUsdRate when the component mounts
-  useEffect(() => {
-    fetchEthToUsdRate();
-  }, []);
+  // Set ETH to USD conversion rate to a fixed value of 2450
+  const fixedEthToUsdRate = 2450;
 
   // Connect the user's MetaMask wallet
   const connectWallet = async () => {
@@ -75,12 +59,8 @@ function App() {
       return;
     }
 
-    if (!ethToUsdRate) {
-      alert('ETH to USD rate is unavailable. Please try again later.');
-      return;
-    }
-
-    const totalAmountETH = (totalAmountUSD / ethToUsdRate).toFixed(18);
+    // Use the fixed ETH to USD conversion rate (2450)
+    const totalAmountETH = (totalAmountUSD / fixedEthToUsdRate).toFixed(18);
     console.log(`Total amount to pay: ${totalAmountETH} ETH`);
 
     try {
@@ -97,13 +77,6 @@ function App() {
         alert('Insufficient funds to complete the transaction.');
         return;
       }
-
-      // Estimate gas fees (optional logging)
-      const gasEstimate = await signer.estimateGas({
-        to: '0x5cc5132c3d3EFC4327617743D9E537e2C8F4a9D4',
-        value: ethers.utils.parseEther(totalAmountETH.toString()),
-      });
-      console.log('Estimated Gas:', gasEstimate.toString());
 
       // Send the transaction
       const transaction = await signer.sendTransaction({
