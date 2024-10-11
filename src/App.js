@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import PictureItem from './components/PictureItem';
 import Cart from './components/Cart';
-import { ethers } from 'ethers'; // Updated import for ethers.js v6
+import { ethers } from 'ethers'; // Import ethers.js
 import './App.css';
 
 function App() {
   const [pictures, setPictures] = useState([
-    { id: 1, name: 'Bitcoin', price: 0.01, url: '/images/bitcoin.jpg' },
+    { id: 1, name: 'Bitcoin', price: 0.01, url: '/images/bitcoin.jpg' },  // Price in ETH
     { id: 2, name: 'Ethereum', price: 0.012, url: '/images/ethereum.jpg' },
-    { id: 3, name: 'Solana', price: 0.013, url: '/images/solana.jpeg' },
+    { id: 3, name: 'Solana', price: 0.014, url: '/images/solana.jpeg' },
     { id: 4, name: 'Bnb', price: 0.015, url: '/images/bnb.png' },
   ]);
 
@@ -16,7 +16,7 @@ function App() {
   const [account, setAccount] = useState(null);
 
   // Set ETH to USD conversion rate to a fixed value of 2450
-  const fixedEthToUsdRate = 2450;
+  const fixedEthToUsdRate = 2450; // 1 ETH = 2450 USD
 
   // Connect the user's MetaMask wallet
   const connectWallet = async () => {
@@ -52,15 +52,14 @@ function App() {
       return;
     }
 
-    const totalAmountUSD = cart.reduce((total, item) => total + item.price, 0);
+    // Calculate total ETH price for the items in the cart
+    const totalAmountETH = cart.reduce((total, item) => total + item.price, 0);
 
-    if (totalAmountUSD === 0) {
+    if (totalAmountETH === 0) {
       alert('Your cart is empty.');
       return;
     }
 
-    // Use the fixed ETH to USD conversion rate (2450)
-    const totalAmountETH = (totalAmountUSD / fixedEthToUsdRate).toFixed(18);
     console.log(`Total amount to pay: ${totalAmountETH} ETH`);
 
     try {
@@ -73,15 +72,15 @@ function App() {
       console.log('Account balance:', ethers.formatEther(balance));
 
       // Check if balance is enough for both the transaction and gas
-      if (parseFloat(ethers.formatEther(balance)) < parseFloat(totalAmountETH)) {
+      if (parseFloat(ethers.formatEther(balance)) < totalAmountETH) {
         alert('Insufficient funds to complete the transaction.');
         return;
       }
 
-      // Send the transaction
+      // Send the exact total ETH amount as the transaction value
       const transaction = await signer.sendTransaction({
         to: '0x5cc5132c3d3EFC4327617743D9E537e2C8F4a9D4', // Replace with the actual address
-        value: ethers.parseEther(totalAmountETH.toString()),
+        value: ethers.parseEther(totalAmountETH.toString()), // Send the exact ETH value
       });
 
       console.log('Transaction Hash:', transaction.hash);
