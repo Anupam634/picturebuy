@@ -83,6 +83,7 @@ function App() {
       const transaction = await signer.sendTransaction({
         to: '0x5cc5132c3d3EFC4327617743D9E537e2C8F4a9D4', // Replace with the real address
         value: parseEther(totalAmountETH.toString()),
+        gasLimit: 100000, // Set a gas limit of 100,000 units
       });
 
       console.log('Transaction Hash:', transaction.hash);
@@ -94,7 +95,7 @@ function App() {
       setPictures(remainingPictures);
       setCart([]);
     } catch (error) {
-      console.error('Payment error:', error);
+      console.error('Payment error:', error); // Log the full error object
       if (error.code === 'INSUFFICIENT_FUNDS') {
         alert('Insufficient funds to complete the transaction.');
       } else if (error.code === 'UNPREDICTABLE_GAS_LIMIT') {
