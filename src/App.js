@@ -6,10 +6,10 @@ import './App.css';
 
 function App() {
   const [pictures, setPictures] = useState([
-    { id: 1, name: 'Bitcoin', price: 10, url: '/images/bitcoin.jpg' },
-    { id: 2, name: 'Ethereum', price: 20, url: '/images/ethereum.jpg' },
-    { id: 3, name: 'Solana', price: 30, url: '/images/solana.jpeg' },
-    { id: 4, name: 'Bnb', price: 35, url: '/images/bnb.png' },
+    { id: 1, name: 'Bitcoin', price: 0.01, url: '/images/bitcoin.jpg' },
+    { id: 2, name: 'Ethereum', price: 0.012, url: '/images/ethereum.jpg' },
+    { id: 3, name: 'Solana', price: 0.013, url: '/images/solana.jpeg' },
+    { id: 4, name: 'Bnb', price: 0.015, url: '/images/bnb.png' },
   ]);
 
   const [cart, setCart] = useState([]);
