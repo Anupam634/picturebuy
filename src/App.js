@@ -6,17 +6,16 @@ import './App.css';
 
 function App() {
   const [pictures, setPictures] = useState([
-    { id: 1, name: 'Bitcoin', price: 0.03, url: '/images/bitcoin.jpg' },  // Price in USD
-    { id: 2, name: 'Ethereum', price: 0.04, url: '/images/ethereum.jpg' }, // Price in USD
-    { id: 3, name: 'Solana', price: 0.02, url: '/images/solana.jpeg' },    // Price in USD
-    { id: 4, name: 'Bnb', price: 0.01, url: '/images/bnb.png' },           // Price in USD
+    { id: 1, name: 'Bitcoin', price: 0.001, url: '/images/bitcoin.jpg' },
+    { id: 2, name: 'Ethereum', price: 0.002, url: '/images/ethereum.jpg' },
+    { id: 3, name: 'Solana', price: 0.03, url: '/images/solana.jpeg' },
+    { id: 4, name: 'Bnb', price: 0.05, url: '/images/bnb.png' },
   ]);
 
   const [cart, setCart] = useState([]);
   const [account, setAccount] = useState(null);
   const [ethToUsdRate, setEthToUsdRate] = useState(null);
 
-  // Fetch the ETH to USD rate from CoinGecko
   const fetchEthToUsdRate = async () => {
     try {
       const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
@@ -72,25 +71,27 @@ function App() {
       return;
     }
 
-    // Convert the total amount in USD to ETH
-    const totalAmountETH = totalAmountUSD / ethToUsdRate; // Total price in ETH
+    let totalAmountETH = totalAmountUSD / ethToUsdRate;
     console.log(`Total amount to pay: ${totalAmountETH} ETH`);
+
+    totalAmountETH = Math.round(totalAmountETH * 1e18) / 1e18;
 
     try {
       const provider = new BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
 
       const transaction = await signer.sendTransaction({
-        to: '0x5cc5132c3d3EFC4327617743D9E537e2C8F4a9D4', // Replace with the real address
-        value: parseEther(totalAmountETH.toString()), // Sending total amount in ETH
+        to: '0x5cc5132c3d3EFC4327617743D9E537e2C8F4a9D4',
+        value: parseEther(totalAmountETH.toString()),
+        gasLimit: 21000,
       });
 
       console.log('Transaction Hash:', transaction.hash);
-
       await transaction.wait();
       alert('Payment successful!');
 
-      // Clear the cart and possibly update pictures if needed
+      const remainingPictures = pictures.filter(picture => !cart.includes(picture));
+      setPictures(remainingPictures);
       setCart([]);
     } catch (error) {
       console.error('Payment error:', error);
@@ -99,7 +100,7 @@ function App() {
       } else if (error.code === 'UNPREDICTABLE_GAS_LIMIT') {
         alert('Failed to estimate gas. Please try again.');
       } else {
-        alert('Payment failed. Please check the console for more details.');
+        alert('Payment failed: ' + error.message);
       }
     }
   };
