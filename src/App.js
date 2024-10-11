@@ -88,11 +88,27 @@ function App() {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = await provider.getSigner();
 
+      // Log the balance before sending the transaction
+      const balance = await signer.getBalance();
+      console.log('Account balance:', ethers.utils.formatEther(balance));
+
+      // Check if balance is enough for both the transaction and gas
+      if (parseFloat(ethers.utils.formatEther(balance)) < parseFloat(totalAmountETH)) {
+        alert('Insufficient funds to complete the transaction.');
+        return;
+      }
+
+      // Estimate gas fees (optional logging)
+      const gasEstimate = await signer.estimateGas({
+        to: '0x5cc5132c3d3EFC4327617743D9E537e2C8F4a9D4',
+        value: ethers.utils.parseEther(totalAmountETH.toString()),
+      });
+      console.log('Estimated Gas:', gasEstimate.toString());
+
       // Send the transaction
       const transaction = await signer.sendTransaction({
         to: '0x5cc5132c3d3EFC4327617743D9E537e2C8F4a9D4',
         value: ethers.utils.parseEther(totalAmountETH.toString()),
-        gasLimit: 21000, // Default gas limit for ETH transfers
       });
 
       console.log('Transaction Hash:', transaction.hash);
@@ -109,10 +125,14 @@ function App() {
       setCart([]);
     } catch (error) {
       console.error('Payment error:', error);
+
+      // Better error handling based on error codes and messages
       if (error.code === 'INSUFFICIENT_FUNDS') {
         alert('Insufficient funds to complete the transaction.');
       } else if (error.code === 'UNPREDICTABLE_GAS_LIMIT') {
         alert('Failed to estimate gas. Please try again.');
+      } else if (error.message.includes('User denied transaction signature')) {
+        alert('Transaction denied by the user.');
       } else {
         alert('Payment failed. Please check the console for more details.');
       }
