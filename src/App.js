@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import PictureItem from './components/PictureItem';
 import Cart from './components/Cart';
-import { ethers } from 'ethers';
+import { ethers } from 'ethers'; // Updated import
 import './App.css';
 
 function App() {
@@ -64,9 +64,9 @@ function App() {
     console.log(`Total amount to pay: ${totalAmountETH} ETH`);
 
     try {
-      // Initialize the Web3 provider using ethers
+      // Use the ethers.js Web3 provider
       const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = await provider.getSigner();
+      const signer = provider.getSigner();
 
       // Log the balance before sending the transaction
       const balance = await signer.getBalance();
@@ -80,7 +80,7 @@ function App() {
 
       // Send the transaction
       const transaction = await signer.sendTransaction({
-        to: '0x5cc5132c3d3EFC4327617743D9E537e2C8F4a9D4',
+        to: '0x5cc5132c3d3EFC4327617743D9E537e2C8F4a9D4', // Replace with the actual address
         value: ethers.utils.parseEther(totalAmountETH.toString()),
       });
 
