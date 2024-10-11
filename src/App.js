@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PictureItem from './components/PictureItem';
 import Cart from './components/Cart';
-import { ethers } from 'ethers'; // Updated import
+import { ethers } from 'ethers'; // Updated import for ethers.js v6
 import './App.css';
 
 function App() {
@@ -64,16 +64,16 @@ function App() {
     console.log(`Total amount to pay: ${totalAmountETH} ETH`);
 
     try {
-      // Use the ethers.js Web3 provider
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
+      // Use the ethers.js Web3 provider for version 6
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
 
       // Log the balance before sending the transaction
       const balance = await signer.getBalance();
-      console.log('Account balance:', ethers.utils.formatEther(balance));
+      console.log('Account balance:', ethers.formatEther(balance));
 
       // Check if balance is enough for both the transaction and gas
-      if (parseFloat(ethers.utils.formatEther(balance)) < parseFloat(totalAmountETH)) {
+      if (parseFloat(ethers.formatEther(balance)) < parseFloat(totalAmountETH)) {
         alert('Insufficient funds to complete the transaction.');
         return;
       }
@@ -81,7 +81,7 @@ function App() {
       // Send the transaction
       const transaction = await signer.sendTransaction({
         to: '0x5cc5132c3d3EFC4327617743D9E537e2C8F4a9D4', // Replace with the actual address
-        value: ethers.utils.parseEther(totalAmountETH.toString()),
+        value: ethers.parseEther(totalAmountETH.toString()),
       });
 
       console.log('Transaction Hash:', transaction.hash);
