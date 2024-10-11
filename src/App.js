@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PictureItem from './components/PictureItem';
 import Cart from './components/Cart';
-import { BrowserProvider, parseEther } from 'ethers';
+import { ethers } from 'ethers';
 import './App.css';
 
 function App() {
@@ -16,9 +16,12 @@ function App() {
   const [account, setAccount] = useState(null);
   const [ethToUsdRate, setEthToUsdRate] = useState(null);
 
+  // Fetch the current ETH to USD rate from the CoinGecko API
   const fetchEthToUsdRate = async () => {
     try {
-      const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
+      const response = await fetch(
+        'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd'
+      );
       const data = await response.json();
       setEthToUsdRate(data.ethereum.usd);
     } catch (error) {
@@ -26,14 +29,18 @@ function App() {
     }
   };
 
+  // Run the fetchEthToUsdRate when the component mounts
   useEffect(() => {
     fetchEthToUsdRate();
   }, []);
 
+  // Connect the user's MetaMask wallet
   const connectWallet = async () => {
     if (window.ethereum) {
       try {
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const accounts = await window.ethereum.request({
+          method: 'eth_requestAccounts',
+        });
         setAccount(accounts[0]);
         console.log('Connected account:', accounts[0]);
       } catch (error) {
@@ -44,15 +51,17 @@ function App() {
     }
   };
 
+  // Add an item to the cart
   const handleBuy = (picture) => {
-    const isInCart = cart.some(item => item.id === picture.id);
+    const isInCart = cart.some((item) => item.id === picture.id);
     if (!isInCart) {
       setCart([...cart, picture]);
     } else {
-      alert("This picture is already in your cart!");
+      alert('This picture is already in your cart!');
     }
   };
 
+  // Handle the payment process
   const handlePay = async () => {
     if (!account) {
       alert('Please connect to MetaMask first.');
@@ -71,24 +80,31 @@ function App() {
       return;
     }
 
-    const totalAmountETH = totalAmountUSD / ethToUsdRate;
+    const totalAmountETH = (totalAmountUSD / ethToUsdRate).toFixed(18);
     console.log(`Total amount to pay: ${totalAmountETH} ETH`);
 
     try {
-      const provider = new BrowserProvider(window.ethereum);
+      // Initialize the Web3 provider using ethers
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = await provider.getSigner();
 
+      // Send the transaction
       const transaction = await signer.sendTransaction({
         to: '0x5cc5132c3d3EFC4327617743D9E537e2C8F4a9D4',
-        value: parseEther(totalAmountETH.toString()),
+        value: ethers.utils.parseEther(totalAmountETH.toString()),
+        gasLimit: 21000, // Default gas limit for ETH transfers
       });
 
       console.log('Transaction Hash:', transaction.hash);
 
+      // Wait for the transaction to be confirmed
       await transaction.wait();
       alert('Payment successful!');
 
-      const remainingPictures = pictures.filter(picture => !cart.includes(picture));
+      // Remove purchased items from the pictures list and clear the cart
+      const remainingPictures = pictures.filter(
+        (picture) => !cart.includes(picture)
+      );
       setPictures(remainingPictures);
       setCart([]);
     } catch (error) {
@@ -108,8 +124,14 @@ function App() {
       <h1>Buy Pictures</h1>
 
       <button onClick={connectWallet} className="connect-button">
-        <img src="/images/metamask.png" alt="MetaMask" className="metamask-icon" />
-        {account ? `Connected: ${account.slice(0, 6)}...${account.slice(-4)}` : 'Connect MetaMask'}
+        <img
+          src="/images/metamask.png"
+          alt="MetaMask"
+          className="metamask-icon"
+        />
+        {account
+          ? `Connected: ${account.slice(0, 6)}...${account.slice(-4)}`
+          : 'Connect MetaMask'}
       </button>
 
       <div className="picture-gallery">
