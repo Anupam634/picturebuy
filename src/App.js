@@ -1,4 +1,4 @@
-{ useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import PictureItem from './components/PictureItem';
 import Cart from './components/Cart';
 import { BrowserProvider, parseEther } from 'ethers';
@@ -6,16 +6,17 @@ import './App.css';
 
 function App() {
   const [pictures, setPictures] = useState([
-    { id: 1, name: 'Bitcoin', price: 10, url: '/images/bitcoin.jpg' },
-    { id: 2, name: 'Ethereum', price: 20, url: '/images/ethereum.jpg' },
-    { id: 3, name: 'Solana', price: 13, url: '/images/solana.jpeg' },
-    { id: 4, name: 'Bnb', price: 15, url: '/images/bnb.png' },
+    { id: 1, name: 'Bitcoin', price: 10, url: '/images/bitcoin.jpg' },  // Price in USD
+    { id: 2, name: 'Ethereum', price: 20, url: '/images/ethereum.jpg' }, // Price in USD
+    { id: 3, name: 'Solana', price: 30, url: '/images/solana.jpeg' },    // Price in USD
+    { id: 4, name: 'Bnb', price: 35, url: '/images/bnb.png' },           // Price in USD
   ]);
 
   const [cart, setCart] = useState([]);
   const [account, setAccount] = useState(null);
   const [ethToUsdRate, setEthToUsdRate] = useState(null);
 
+  // Fetch the ETH to USD rate from CoinGecko
   const fetchEthToUsdRate = async () => {
     try {
       const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
@@ -71,15 +72,16 @@ function App() {
       return;
     }
 
+    // Convert the total amount in USD to ETH
     const totalAmountETH = totalAmountUSD / ethToUsdRate;
-    console.log(Total amount to pay: ${totalAmountETH} ETH);
+    console.log(`Total amount to pay: ${totalAmountETH} ETH`);
 
     try {
       const provider = new BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
 
       const transaction = await signer.sendTransaction({
-        to: '0x5cc5132c3d3EFC4327617743D9E537e2C8F4a9D4',
+        to: '0x5cc5132c3d3EFC4327617743D9E537e2C8F4a9D4', // Replace with the real address
         value: parseEther(totalAmountETH.toString()),
       });
 
@@ -109,7 +111,7 @@ function App() {
 
       <button onClick={connectWallet} className="connect-button">
         <img src="/images/metamask.png" alt="MetaMask" className="metamask-icon" />
-        {account ? Connected: ${account.slice(0, 6)}...${account.slice(-4)} : 'Connect MetaMask'}
+        {account ? `Connected: ${account.slice(0, 6)}...${account.slice(-4)}` : 'Connect MetaMask'}
       </button>
 
       <div className="picture-gallery">
@@ -123,4 +125,4 @@ function App() {
   );
 }
 
-export default App; 
+export default App;
