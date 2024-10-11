@@ -73,7 +73,7 @@ function App() {
     }
 
     // Convert the total amount in USD to ETH
-    const totalAmountETH = totalAmountUSD / ethToUsdRate;
+    const totalAmountETH = totalAmountUSD / ethToUsdRate; // Total price in ETH
     console.log(`Total amount to pay: ${totalAmountETH} ETH`);
 
     try {
@@ -82,7 +82,7 @@ function App() {
 
       const transaction = await signer.sendTransaction({
         to: '0x5cc5132c3d3EFC4327617743D9E537e2C8F4a9D4', // Replace with the real address
-        value: parseEther(totalAmountETH.toString()),
+        value: parseEther(totalAmountETH.toString()), // Sending total amount in ETH
       });
 
       console.log('Transaction Hash:', transaction.hash);
@@ -90,8 +90,7 @@ function App() {
       await transaction.wait();
       alert('Payment successful!');
 
-      const remainingPictures = pictures.filter(picture => !cart.includes(picture));
-      setPictures(remainingPictures);
+      // Clear the cart and possibly update pictures if needed
       setCart([]);
     } catch (error) {
       console.error('Payment error:', error);
