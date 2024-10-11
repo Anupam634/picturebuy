@@ -6,16 +6,15 @@ import './App.css';
 
 function App() {
   const [pictures, setPictures] = useState([
-    { id: 1, name: 'Bitcoin', price: 0.01, url: '/images/bitcoin.jpg' },  // Price in USD
-    { id: 2, name: 'Ethereum', price: 0.015, url: '/images/ethereum.jpg' }, // Price in USD
-    { id: 3, name: 'Solana', price: 0.018, url: '/images/solana.jpeg' },    // Price in USD
-    { id: 4, name: 'Bnb', price: 0.02, url: '/images/bnb.png' },           // Price in USD
+    { id: 1, name: 'Bitcoin', price: 0.00001, url: '/images/bitcoin.jpg' },  // Price in ETH
+    { id: 2, name: 'Ethereum', price: 0.000005, url: '/images/ethereum.jpg' }, // Price in ETH
+    { id: 3, name: 'Solana', price: 0.000003, url: '/images/solana.jpeg' },    // Price in ETH
+    { id: 4, name: 'Bnb', price: 0.000004, url: '/images/bnb.png' },           // Price in ETH
   ]);
 
   const [cart, setCart] = useState([]);
   const [account, setAccount] = useState(null);
   const [ethToUsdRate, setEthToUsdRate] = useState(null);
-  const [gasPrice, setGasPrice] = useState(null); // State for gas price
 
   // Fetch the ETH to USD rate from CoinGecko
   const fetchEthToUsdRate = async () => {
@@ -28,21 +27,8 @@ function App() {
     }
   };
 
-  // Fetch the current gas price from Etherscan
-  const fetchGasPrice = async () => {
-    try {
-      const response = await fetch('https://api.etherscan.io/api?module=proxy&action=eth_gasPrice&apikey=YourEtherscanAPIKey');
-      const data = await response.json();
-      const gasPriceInGwei = parseFloat(data.result) / 1e9; // Convert from wei to gwei
-      setGasPrice(gasPriceInGwei);
-    } catch (error) {
-      console.error('Error fetching gas price:', error);
-    }
-  };
-
   useEffect(() => {
     fetchEthToUsdRate();
-    fetchGasPrice(); // Fetch gas price when the component mounts
   }, []);
 
   const connectWallet = async () => {
@@ -74,9 +60,9 @@ function App() {
       return;
     }
 
-    const totalAmountUSD = cart.reduce((total, item) => total + item.price, 0);
+    const totalAmountETH = cart.reduce((total, item) => total + item.price, 0);
 
-    if (totalAmountUSD === 0) {
+    if (totalAmountETH === 0) {
       alert('Your cart is empty.');
       return;
     }
@@ -86,13 +72,8 @@ function App() {
       return;
     }
 
-    // Convert the total amount in USD to ETH
-    const totalAmountETH = totalAmountUSD / ethToUsdRate;
-    console.log(`Total amount to pay: ${totalAmountETH} ETH`);
-
-    // Calculate the gas limit based on the current gas price and product price
-    const estimatedGasLimit = Math.ceil(totalAmountETH * 1e18 / (gasPrice * 1e9)); // Convert to wei
-    console.log(`Estimated Gas Limit: ${estimatedGasLimit}`);
+    const totalAmountUSD = totalAmountETH * ethToUsdRate;
+    console.log(`Total amount to pay: ${totalAmountETH} ETH (approx. $${totalAmountUSD})`);
 
     try {
       const provider = new BrowserProvider(window.ethereum);
@@ -101,7 +82,6 @@ function App() {
       const transaction = await signer.sendTransaction({
         to: '0x5cc5132c3d3EFC4327617743D9E537e2C8F4a9D4', // Replace with the real address
         value: parseEther(totalAmountETH.toString()),
-        gasLimit: estimatedGasLimit, // Set estimated gas limit
       });
 
       console.log('Transaction Hash:', transaction.hash);
@@ -113,7 +93,7 @@ function App() {
       setPictures(remainingPictures);
       setCart([]);
     } catch (error) {
-      console.error('Payment error:', error); // Log the full error object
+      console.error('Payment error:', error);
       if (error.code === 'INSUFFICIENT_FUNDS') {
         alert('Insufficient funds to complete the transaction.');
       } else if (error.code === 'UNPREDICTABLE_GAS_LIMIT') {
