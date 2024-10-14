@@ -52,7 +52,10 @@ function App() {
       alert("This picture is already in your cart!");
     }
   };
-
+   const handleRemove = (picture) => {
+    const updatedCart = cart.filter(item => item.id !== picture.id);
+    setCart(updatedCart);
+  };
   const handlePay = async () => {
     if (!account) {
       alert('Please connect to MetaMask first.');
