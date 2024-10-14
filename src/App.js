@@ -6,8 +6,8 @@ import './App.css';
 
 function App() {
   const [pictures, setPictures] = useState([
-    { id: 1, name: 'Bitcoin', price: 0.001, url: '/images/bitcoin.jpg' },
-    { id: 2, name: 'Ethereum', price: 0.002, url: '/images/ethereum.jpg' },
+    { id: 1, name: 'Bitcoin', price: 0.01, url: '/images/bitcoin.jpg' },
+    { id: 2, name: 'Ethereum', price: 0.02, url: '/images/ethereum.jpg' },
     { id: 3, name: 'Solana', price: 0.03, url: '/images/solana.jpeg' },
     { id: 4, name: 'Bnb', price: 0.05, url: '/images/bnb.png' },
   ]);
