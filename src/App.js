@@ -123,7 +123,8 @@ function App() {
         ))}
       </div>
 
-      <Cart cart={cart} onPay={handlePay} />
+      <Cart cart={cart} onPay={handlePay} onRemove={handleRemove} />
+
     </div>
   );
 }
