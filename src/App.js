@@ -100,7 +100,7 @@ function App() {
       } else if (error.code === 'UNPREDICTABLE_GAS_LIMIT') {
         alert('Failed to estimate gas. Please try again.');
       } else {
-        alert('Payment failed: ' + error.message);
+        alert('Payment failed ');
       }
     }
   };
